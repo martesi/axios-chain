@@ -1,0 +1,11 @@
+{
+  "name": "axios-chain",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "1.1.1"
+  },
+  "peerDependencies": {
+    "axios": "^1.6.8"
+  }
+}
