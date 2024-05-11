@@ -1,9 +1,25 @@
 {
   "name": "axios-chain",
-  "module": "index.ts",
+  "version": "0.1.0",
+  "module": "dist/index.js",
+  "types": "src/index.ts",
   "type": "module",
+  "author": "martes",
+  "scripts": {
+    "dev": "vitest",
+    "test": "bun test",
+    "prepublishOnly": "bun build src/index.ts --outdir dist --external axios"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
   "devDependencies": {
-    "@types/bun": "1.1.1"
+    "vitest": "^1.6.0"
   },
   "peerDependencies": {
     "axios": "^1.6.8"
