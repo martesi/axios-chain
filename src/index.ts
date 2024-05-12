@@ -1,6 +1,10 @@
 import defaultAxiosInstance from 'axios'
 import { mergeArgs, mergeConfig } from './lib/core'
-import { extensionCompact, extensionEssential, extensionQuality, } from './lib/extension'
+import {
+  extensionCompact,
+  extensionEssential,
+  extensionQuality,
+} from './lib/extension'
 import type {
   AxiosChain,
   AxiosChainConfig,
@@ -12,10 +16,10 @@ import type {
   ExtensionEssential,
   ExtensionQuality,
   ExtensionResult,
-  MergeArgs
+  MergeArgs,
 } from './types'
 
-function create (initial: AxiosChainConfigInternal = {}) {
+function create(initial: AxiosChainConfigInternal = {}) {
   const { extensions = [], ...publicConfig } = initial
   const base = (...args: Parameters<MergeArgs>) =>
     request(mergeConfig(publicConfig, mergeArgs(...args)))
@@ -32,7 +36,7 @@ function create (initial: AxiosChainConfigInternal = {}) {
       create(mergeConfig(initial, config, false)),
   }
 
-  function createForExtension (config?: ExtensionCreateConfig) {
+  function createForExtension(config?: ExtensionCreateConfig) {
     let instance = base
 
     if (config?.config?.next) {
@@ -51,14 +55,18 @@ function create (initial: AxiosChainConfigInternal = {}) {
   return Object.assign(base, core, fromExtensions)
 }
 
-function request (config: AxiosChainConfigInternal) {
-  const {
+function request(config: AxiosChainConfigInternal) {
+  let {
     pathParams,
     resolveUrl,
     resolveUrlFrom,
     axios = defaultAxiosInstance,
     ...axiosRequestConfig
   } = config
+
+  if (typeof resolveUrlFrom === 'string') {
+    resolveUrlFrom = [resolveUrlFrom]
+  }
 
   if (resolveUrl && Array.isArray(resolveUrlFrom)) {
     for (const key of resolveUrlFrom) {
@@ -81,11 +89,13 @@ function request (config: AxiosChainConfigInternal) {
   return axios(axiosRequestConfig)
 }
 
-function createForUser (initial?: AxiosChainConfig): AxiosChain {
+function createForUser(initial?: AxiosChainConfig): AxiosChain {
   return create(initial) as any
 }
 
-type AxiosChainDefault = AxiosChain<ExtensionCompact & ExtensionEssential & ExtensionQuality> & {
+type AxiosChainDefault = AxiosChain<
+  ExtensionCompact & ExtensionEssential & ExtensionQuality
+> & {
   create: typeof createForUser
 }
 
