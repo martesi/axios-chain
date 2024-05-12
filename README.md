@@ -1,15 +1,6 @@
 # axios-chain
 
-To install dependencies:
+A small library provides extension wrapper for developers to better work with the famous axios http request library.
 
-```bash
-bun install
-```
-
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.1.5. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+- Typescript Support
+- Extendable
