@@ -1,5 +1,5 @@
 {
-  "name": "axios-chain",
+  "name": "@martes/axios-chain",
   "version": "0.1.0",
   "module": "dist/index.js",
   "types": "src/index.ts",
@@ -14,6 +14,16 @@
     "dist",
     "src"
   ],
+  "tags": [
+    "axios"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/martesi/axios-chain.git"
+  },
+  "bugs": {
+    "url": "https://github.com/martesi/axios-chain/issues"
+  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
