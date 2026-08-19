@@ -39,13 +39,15 @@ export interface Extension<
   (create: ExtensionContextCreate<C>, config: AxiosChainConfig): R
 }
 
-export type ExtensionContextCreate<C extends AxiosChain = AxiosChain> = (
+export type ExtensionContextCreate<C extends AxiosChain = AxiosChain> = ((
   config?: ExtensionCreateConfig
-) => AxiosChainCurrent<C>
+) => AxiosChainCurrent) & {
+  previous: C
+}
 
 const REPLACE_TAG = Symbol('axios-chain/replace')
 
-export type AxiosChainCurrent<C extends AxiosChain = AxiosChain> = C & {
+export type AxiosChainCurrent = AxiosChain & {
   [REPLACE_TAG]: true
 }
 
