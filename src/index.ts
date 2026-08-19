@@ -50,9 +50,10 @@ function create(initial: AxiosChainConfigInternal = {}) {
       ...initial,
       extensions: extensions.slice(0, index),
     }) as AxiosChain
-    const contextCreate = Object.assign(createForExtension, {
-      previous,
-    }) as ExtensionContextCreate
+    const contextCreate = Object.assign(
+      (config?: ExtensionCreateConfig) => createForExtension(config),
+      { previous }
+    ) as ExtensionContextCreate
 
     return Object.assign(acc, ext(contextCreate, publicConfig))
   }, {} as ExtensionResult)
