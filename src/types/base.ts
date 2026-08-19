@@ -33,13 +33,13 @@ export interface ResolveUrlContext {
 }
 
 export interface Extension<
-  C extends AxiosChain = AxiosChain,
+  C = AxiosChain,
   R extends ExtensionResult = ExtensionResult,
 > {
   (create: ExtensionContextCreate<C>, config: AxiosChainConfig): R
 }
 
-export type ExtensionContextCreate<C extends AxiosChain = AxiosChain> = ((
+export type ExtensionContextCreate<C = AxiosChain> = ((
   config?: ExtensionCreateConfig
 ) => AxiosChainCurrent) & {
   previous: C
