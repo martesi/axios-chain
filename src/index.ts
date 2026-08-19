@@ -37,13 +37,10 @@ function create(initial: AxiosChainConfigInternal = {}) {
   }
 
   function createForExtension(config?: ExtensionCreateConfig) {
-    let instance = base
+    const instance = config?.config?.next
+      ? create(mergeConfig(initial, config.config.next))
+      : create(initial)
 
-    if (config?.config?.next) {
-      instance = create(mergeConfig(initial, config.config.next))
-    }
-
-    // that tag is just for type replacement, not need to implement for now.
     return instance as AxiosChainCurrent
   }
 
