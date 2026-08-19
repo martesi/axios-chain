@@ -12,6 +12,7 @@ import type {
   AxiosChainCurrent,
   Extension,
   ExtensionCompact,
+  ExtensionContextCreate,
   ExtensionCreateConfig,
   ExtensionEssential,
   ExtensionQuality,
@@ -44,10 +45,17 @@ function create(initial: AxiosChainConfigInternal = {}) {
     return instance as AxiosChainCurrent
   }
 
-  const fromExtensions = extensions.reduce(
-    (acc, ext) => Object.assign(acc, ext(createForExtension, publicConfig)),
-    {} as ExtensionResult
-  )
+  const fromExtensions = extensions.reduce((acc, ext, index) => {
+    const previous = create({
+      ...initial,
+      extensions: extensions.slice(0, index),
+    }) as AxiosChain
+    const contextCreate = Object.assign(createForExtension, {
+      previous,
+    }) as ExtensionContextCreate
+
+    return Object.assign(acc, ext(contextCreate, publicConfig))
+  }, {} as ExtensionResult)
 
   return Object.assign(base, core, fromExtensions)
 }
