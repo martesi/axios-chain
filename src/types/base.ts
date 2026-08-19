@@ -2,6 +2,14 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 
 type OrArray<T> = T | T[]
 
+type Override<A, B> = {
+  [K in keyof A | keyof B]: K extends keyof B
+    ? B[K]
+    : K extends keyof A
+      ? A[K]
+      : never
+}
+
 export type AxiosChain<E extends ExtensionResult = {}> = AxiosChainCore<E> & {
   [K in keyof E]: ReturnType<E[K]> extends AxiosChainCurrent
     ? (...args: Parameters<E[K]>) => AxiosChain<E>
@@ -24,17 +32,20 @@ export interface ResolveUrlContext {
   trigger: keyof AxiosChainConfigInternal
 }
 
-export interface Extension {
-  (create: ExtensionContextCreate, config: AxiosChainConfig): ExtensionResult
+export interface Extension<
+  C extends AxiosChain = AxiosChain,
+  R extends ExtensionResult = ExtensionResult,
+> {
+  (create: ExtensionContextCreate<C>, config: AxiosChainConfig): R
 }
 
-export type ExtensionContextCreate = (
+export type ExtensionContextCreate<C extends AxiosChain = AxiosChain> = (
   config?: ExtensionCreateConfig
-) => AxiosChainCurrent
+) => AxiosChainCurrent<C>
 
 const REPLACE_TAG = Symbol('axios-chain/replace')
 
-export interface AxiosChainCurrent extends AxiosChain {
+type AxiosChainCurrent<C extends AxiosChain = AxiosChain> = C & {
   [REPLACE_TAG]: true
 }
 
@@ -55,11 +66,7 @@ export interface AxiosChainCore<E extends ExtensionResult> {
 
   config(config: AxiosChainConfig): AxiosChain<E>
 
-  extend<C extends Extension>(
-    custom: C
-  ): AxiosChain<{
-    [K in keyof E | keyof ReturnType<C>]: K extends keyof ReturnType<C>
-      ? ReturnType<C>[K]
-      : E[K]
-  }>
+  extend<R extends ExtensionResult>(
+    custom: Extension<AxiosChain<E>, R>
+  ): AxiosChain<Override<E, R>>
 }
