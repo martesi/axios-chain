@@ -45,7 +45,7 @@ export type ExtensionContextCreate<C extends AxiosChain = AxiosChain> = (
 
 const REPLACE_TAG = Symbol('axios-chain/replace')
 
-type AxiosChainCurrent<C extends AxiosChain = AxiosChain> = C & {
+export type AxiosChainCurrent<C extends AxiosChain = AxiosChain> = C & {
   [REPLACE_TAG]: true
 }
 
