@@ -42,14 +42,14 @@ function create(initial: AxiosChainConfigInternal = {}) {
       ? create(mergeConfig(initial, config.config.next))
       : create(initial)
 
-    return instance as AxiosChainCurrent
+    return instance as unknown as AxiosChainCurrent
   }
 
   const fromExtensions = extensions.reduce((acc, ext, index) => {
     const previous = create({
       ...initial,
       extensions: extensions.slice(0, index),
-    }) as AxiosChain
+    }) as unknown as AxiosChain
     const contextCreate = Object.assign(
       (config?: ExtensionCreateConfig) => createForExtension(config),
       { previous }
