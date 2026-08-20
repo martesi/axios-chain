@@ -12,7 +12,6 @@ import type {
   AxiosChainCurrent,
   Extension,
   ExtensionCompact,
-  ExtensionContextCreate,
   ExtensionCreateConfig,
   ExtensionEssential,
   ExtensionQuality,
@@ -38,25 +37,19 @@ function create(initial: AxiosChainConfigInternal = {}) {
   }
 
   function createForExtension(config?: ExtensionCreateConfig) {
-    const instance = config?.config?.next
-      ? create(mergeConfig(initial, config.config.next))
-      : create(initial)
+    let instance = base
+
+    if (config?.config?.next) {
+      instance = create(mergeConfig(initial, config.config.next))
+    }
 
     return instance as unknown as AxiosChainCurrent
   }
 
-  const fromExtensions = extensions.reduce((acc, ext, index) => {
-    const previous = create({
-      ...initial,
-      extensions: extensions.slice(0, index),
-    }) as unknown as AxiosChain
-    const contextCreate = Object.assign(
-      (config?: ExtensionCreateConfig) => createForExtension(config),
-      { previous }
-    ) as ExtensionContextCreate
-
-    return Object.assign(acc, ext(contextCreate, publicConfig))
-  }, {} as ExtensionResult)
+  const fromExtensions = extensions.reduce(
+    (acc, ext) => Object.assign(acc, ext(createForExtension, publicConfig)),
+    {} as ExtensionResult
+  )
 
   return Object.assign(base, core, fromExtensions)
 }
@@ -117,6 +110,7 @@ export type {
   AxiosChain,
   AxiosChainConfig,
   Extension,
+  ExtensionContextCreate,
   ExtensionCreateConfig,
   ResolveUrlContext,
 } from './types/base'
