@@ -10,11 +10,18 @@ type Override<A, B> = {
       : never
 }
 
+declare const REPLACE_TAG: unique symbol
+
+interface AxiosChainCurrentMarker {
+  [REPLACE_TAG]: true
+}
+
 export type AxiosChain<E extends ExtensionResult = {}> = AxiosChainCore<E> & {
-  [K in keyof E]: ReturnType<E[K]> extends AxiosChainCurrent
-    ? (...args: Parameters<E[K]>) => AxiosChain<E>
+  [K in keyof E]: ReturnType<E[K]> extends AxiosChainCurrentMarker
+    ? (...args: Parameters<E[K]>) => AxiosChainCurrent<E>
     : E[K]
 }
+
 export interface AxiosChainConfigInternal extends AxiosRequestConfig {
   pathParams?: unknown
   resolveUrlFrom?: OrArray<keyof AxiosChainConfigInternal>
@@ -33,23 +40,18 @@ export interface ResolveUrlContext {
 }
 
 export interface Extension<
-  C = AxiosChain,
-  R extends ExtensionResult = ExtensionResult,
+  Requires extends ExtensionResult = {},
+  Result extends ExtensionResult = ExtensionResult,
 > {
-  (create: ExtensionContextCreate<C>, config: AxiosChainConfig): R
+  (create: ExtensionContextCreate<Requires>, config: AxiosChainConfig): Result
 }
 
-export type ExtensionContextCreate<C = AxiosChain> = ((
+export type ExtensionContextCreate<Requires extends ExtensionResult = {}> = (
   config?: ExtensionCreateConfig
-) => AxiosChainCurrent) & {
-  previous: C
-}
+) => AxiosChainCurrent<Requires>
 
-const REPLACE_TAG = Symbol('axios-chain/replace')
-
-export type AxiosChainCurrent = AxiosChain & {
-  [REPLACE_TAG]: true
-}
+export type AxiosChainCurrent<E extends ExtensionResult = {}> = AxiosChain<E> &
+  AxiosChainCurrentMarker
 
 export type ExtensionResult = Record<any, (...args: any[]) => unknown>
 
@@ -64,11 +66,11 @@ export interface AxiosChainCore<E extends ExtensionResult> {
     AxiosResponse<T>
   >
 
-  replace(config: AxiosChainConfig): AxiosChain<E>
+  replace(config: AxiosChainConfig): this
 
-  config(config: AxiosChainConfig): AxiosChain<E>
+  config(config: AxiosChainConfig): this
 
   extend<R extends ExtensionResult>(
-    custom: Extension<AxiosChain<E>, R>
+    custom: Extension<E, R>
   ): AxiosChain<Override<E, R>>
 }
